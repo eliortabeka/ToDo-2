@@ -1,6 +1,6 @@
 # Todos
 
-Angular 11 ToDo App using EventEmitter
+Angular 11 ToDo App via Service
 
 ## Development server
 
