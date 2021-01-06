@@ -1,4 +1,4 @@
-import {Component, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TodosService} from "./core/services/todos.service";
 import {TodoModel} from "./core/interfaces/todo.interface";
 
@@ -9,17 +9,12 @@ import {TodoModel} from "./core/interfaces/todo.interface";
 })
 export class AppComponent implements OnInit, OnDestroy {
 
-  constructor(private todosService:TodosService) {
-
-  }
+  constructor(private todosService:TodosService) {}
 
 
-  items:any[] = [];
+  items: any[] = [];
 
   ngOnInit() {
-    // if (localStorage.getItem('items')) {
-    //   this.items = [...JSON.parse(localStorage.getItem('items'))];
-    // }
     this.getTodos();
     this.getNewTodos();
     this.checkTodosToRemove();
@@ -28,27 +23,23 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.todosSub.unsubscribe();
-    if(this.saveTodosSub) { this.saveTodosSub.unsubscribe(); }
-    if(this.removeItem$Sub) { this.removeItem$Sub.unsubscribe(); }
-    if(this.editItem$Sub) { this.editItem$Sub.unsubscribe(); }
+    if (this.saveTodosSub) { this.saveTodosSub.unsubscribe(); }
+    if (this.removeItem$Sub) { this.removeItem$Sub.unsubscribe(); }
+    if (this.editItem$Sub) { this.editItem$Sub.unsubscribe(); }
   }
 
   removeItem$Sub;
   checkTodosToRemove() {
     this.removeItem$Sub = this.todosService.removeItem$.subscribe((item: TodoModel) => {
-      console.log('new item', item)
-
-      if(item) {
-        this.items = this.items.filter(current => current.id != item.id);
-      }
+      if (item) { this.items = this.items.filter(current => current.id !== item.id); }
     });
   }
 
   editItem$Sub;
   checkTodosToEdit() {
     this.editItem$Sub = this.todosService.editItem$.subscribe((item: TodoModel) => {
-      if(item) {
-        for (let i of this.items) {
+      if (item) {
+        for (const i of this.items) {
           if (i.id === item.id) {
             i.completed = !item.completed;
           }
@@ -59,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   todosSub;
   getTodos() {
-    this.todosSub = this.todosService.getTodos().subscribe((todos:TodoModel[]) => {
+    this.todosSub = this.todosService.getTodos().subscribe((todos: TodoModel[]) => {
       this.items = [...todos];
     });
   }
@@ -67,15 +58,14 @@ export class AppComponent implements OnInit, OnDestroy {
   getNewTodosSub;
   getNewTodos() {
     this.getNewTodosSub = this.todosService.addItem$.subscribe((todos:TodosService) => {
-      this.items.push(todos);
+      this.items.unshift(todos);
     });
   }
 
   saveTodosSub;
   saveToDB() {
-    this.saveTodosSub = this.todosService.saveTodos(this.items).subscribe((res:any) => {
+    this.saveTodosSub = this.todosService.saveTodos(this.items).subscribe((res: any) => {
       this.saveTodosSub.unsubscribe();
-      console.log(res);
     });
   }
 
